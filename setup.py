@@ -4,7 +4,13 @@ from distutils import sysconfig
 import platform
 import sys
 
-import numpy
+try:
+    import numpy
+except:  # noqa: E722
+    from unittest.mock import MagicMock
+    sys.modules["numpy"] = MagicMock()
+    import numpy
+
 from setuptools import Extension, setup
 from setuptools.command.test import test as TestCommand
 import versioneer
