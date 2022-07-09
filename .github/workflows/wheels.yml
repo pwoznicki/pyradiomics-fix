@@ -1,0 +1,91 @@
+# Workflow to build and test wheels
+name: Wheel builder
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
+  build_wheels:
+    name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            python: 310
+            bitness: 64
+            platform_id: win_amd64
+
+          # NumPy on Python 3.10 only supports 64bit and is only available with manylinux2014
+          - os: ubuntu-latest
+            python: 310
+            bitness: 64
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+
+          - os: macos-latest
+            bitness: 64
+            python: 310
+            platform_id: macosx_x86_64
+
+          - os: macos-latest
+            bitness: 64
+            python: 310
+            platform_id: macosx_arm64
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'  # update once build dependencies are available
+
+      - name: Build and test wheels
+        env:
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: all
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_BUILD_VERBOSITY: 1
+
+        run: bash build_tools/github/build_wheels.sh
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: wheelhouse/*.whl
+
+  # Build the source distribution under Linux
+  build_sdist:
+    name: Source distribution
+    runs-on: ubuntu-latest
+    needs: check_build_trigger
+    if: needs.check_build_trigger.outputs.build
+
+    steps:
+      - name: Checkout scikit-learn
+        uses: actions/checkout@v1
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'  # update once build dependencies are available
+
+      - name: Build source distribution
+        run: bash build_tools/github/build_source.sh
+
+      - name: Test source distribution
+        run: bash build_tools/github/test_source.sh
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.tar.gz

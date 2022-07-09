@@ -13,7 +13,6 @@ except:  # noqa: E722
 
 from setuptools import Extension, setup
 from setuptools.command.test import test as TestCommand
-import versioneer
 
 # Check if current PyRadiomics is compatible with current python installation (> 2.6, 64 bits)
 if sys.version_info < (2, 6, 0):
@@ -58,8 +57,6 @@ class NoseTestCommand(TestCommand):
     __import__('nose').run_exit(argv=nose_args)
 
 
-commands = versioneer.get_cmdclass()
-commands['test'] = NoseTestCommand
 
 incDirs = [sysconfig.get_python_inc(), numpy.get_include()]
 
@@ -69,7 +66,7 @@ ext = [Extension("radiomics._cmatrices", ["radiomics/src/_cmatrices.c", "radiomi
                  include_dirs=incDirs)]
 
 setup(
-  name='pyradiomics',
+  name='pyradiomics-fix',
 
   url='http://github.com/Radiomics/pyradiomics#readme',
   project_urls={
@@ -81,9 +78,6 @@ setup(
 
   author='pyradiomics community',
   author_email='pyradiomics@googlegroups.com',
-
-  version=versioneer.get_version(),
-  cmdclass=commands,
 
   packages=['radiomics', 'radiomics.scripts'],
   ext_modules=ext,
