@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - CI
 
 jobs:
   # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
