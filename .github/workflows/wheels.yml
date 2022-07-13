@@ -65,4 +65,4 @@ jobs:
       - name: Store artifacts
         uses: actions/upload-artifact@v2
         with:
-          path: wheelhouse/*.whl
+          path: dist/*.whl
