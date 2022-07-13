@@ -66,27 +66,3 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: wheelhouse/*.whl
-
-  # Build the source distribution under Linux
-  build_sdist:
-    name: Source distribution
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout scikit-learn
-        uses: actions/checkout@v1
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'  # update once build dependencies are available
-
-      - name: Build source distribution
-        run: bash build_tools/github/build_source.sh
-
-      - name: Test source distribution
-        run: bash build_tools/github/test_source.sh
-
-      - name: Store artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          path: dist/*.tar.gz
