@@ -25,6 +25,8 @@ jobs:
 
           - os: ubuntu-latest
             python: 310
+            bitness: 64
+            platform_id: manylinux_x_y
 
           - os: macos-latest
             bitness: 64
