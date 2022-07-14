@@ -37,7 +37,6 @@ jobs:
       - name: Build
         run: |
           python -m cibuildwheel --output-dir wheelhouse
-         env:
            
       - name: Store artifacts
         uses: actions/upload-artifact@v2
