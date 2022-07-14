@@ -6,8 +6,6 @@ on:
     branches:
       - master
       - CI
-env:
-  
 
 jobs:
   build_wheels:
